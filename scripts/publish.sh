@@ -1,0 +1,13 @@
+#! /bin/bash 
+###########################################
+# Publish to pypi
+###########################################
+
+# constants
+baseDir=$(cd `dirname "$0"`;pwd)
+# functions
+
+# main 
+[ -z "${BASH_SOURCE[0]}" -o "${BASH_SOURCE[0]}" = "$0" ] || return
+source ~/venv-py3/bin/activate
+python setup.py sdist upload -r pypi
