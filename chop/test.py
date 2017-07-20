@@ -25,11 +25,14 @@ __date__      = "2017-07-20:10:29:58"
 import os
 import sys
 import unittest
+import argparse
 curdir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(curdir))
 
 from chop import Tokenizer, Word, Vocabulary, Chunk
 from chop.util import DEBUG, INFO, WARN, ERROR
+
+global args
 
 class ChopTest(unittest.TestCase):
 
@@ -122,9 +125,24 @@ class ChopTest(unittest.TestCase):
         INFO(' '.join(self.T.cut("是因为和国家")))
         INFO(' '.join(self.T.cut("老年搜索还支持")))
 
-    def test_basecase(self):
+    def test_punctuation(self):
         self.T = Tokenizer(dict_path=os.path.join(curdir, 'dict.txt'))
-        INFO(' '.join(self.T.cut("2000年12月31日23时12分在北京妇产医院降生的宝宝赵辰蠧（右）和2001年1月1日零时9分23秒诞生的宝宝韩纪轮（左）在一起。（本报记者孟仁泉摄）", punctuation=False)))
+        INFO(' '.join(self.T.cut("2000年12月31日23时12分在北京妇产医院降生的宝宝赵辰蠧（右）和2001年1月1日零时9分23秒诞生的宝宝韩纪轮（左）在一起。（本报记者孟仁泉摄）", punctuation=True)))
+
+    def test_basecase(self):
+        global args
+        self.T = Tokenizer(dict_path=os.path.join(curdir, 'dict.txt'))
+        INFO(' '.join(self.T.cut(args.input, punctuation=True)))
 
 if __name__ == '__main__':
+    global args
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input', default='长春市长春节致词。')
+    parser.add_argument('unittest_args', nargs='*')
+
+    args = parser.parse_args()
+    # TODO: Go do something with args.input and args.filename
+
+    # Now set the sys.argv to the unittest_args (leaving sys.argv[0] alone)
+    sys.argv[1:] = args.unittest_args
     unittest.main()

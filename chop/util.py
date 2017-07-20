@@ -12,6 +12,7 @@ LVL = dict({
 LOG_LVL = os.environ['CHOP_LOG_LVL'] if 'CHOP_LOG_LVL' in os.environ else "ERROR"
 
 def INFO(s):
+    print(LOG_LVL)
     if 20 >= LVL[LOG_LVL]:
         print(s)
 

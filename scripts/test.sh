@@ -5,7 +5,6 @@
 
 # constants
 baseDir=$(cd `dirname "$0"`;pwd)
-CHOP_LOG_LVL=DEBUG
 
 # functions
 
@@ -13,4 +12,4 @@ CHOP_LOG_LVL=DEBUG
 [ -z "${BASH_SOURCE[0]}" -o "${BASH_SOURCE[0]}" = "$0" ] || return
 cd $baseDir/..
 source ~/venv-py3/bin/activate
-python chop/test.py
+CHOP_LOG_LVL=DEBUG  python chop/test.py

@@ -58,6 +58,12 @@ sentence 中文句子
 
 Token 使用*yield*返回的*generator*
 
+## 测试
+
+```
+./scripts/test-badcase.sh "工信处女干事每月经过下属科室都要亲口交代24口交换机等技术性器件的安装工作"
+```
+
 ## 算法
 
 * MMSEG: 
