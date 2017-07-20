@@ -42,7 +42,8 @@ sys.path.append(curdir)
 
 import math
 import string
-from functools import reduce 
+from functools import reduce
+from chop.util import DEBUG, INFO, WARN, ERROR
 
 class Word():
     '''
@@ -125,7 +126,7 @@ class Tokenizer():
     MMSEG Tokenizer for Python
     '''
     def __init__(self, dict_path):
-        print('Vocabulary loaded.')
+        DEBUG('Vocabulary loaded.')
         self.V = Vocabulary(dict_path=dict_path)
         
     def cut(self, sentence, punctuation = True):
@@ -134,7 +135,7 @@ class Tokenizer():
 
         while cursor < sentence_length:
             if self.is_chinese_char(sentence[cursor]):
-                print('begin pos 中文')
+                DEBUG('begin pos 中文')
                 chunks = self.__get_chunks(sentence, cursor) # Matching Algorithm
                 if len(chunks) > 0:
                     words, length = self.__ambiguity_resolution(chunks) # Ambiguity Resolution Rules
@@ -146,34 +147,34 @@ class Tokenizer():
                     yield sentence[cursor]
                     cursor += 1
             elif self.V.is_punctuation(sentence[cursor]) and punctuation:
-                print("begin pos 字符")
+                DEBUG("begin pos 字符")
                 yield sentence[cursor]
                 cursor += 1
             else:
-                print('begin pos 非中文单词(英文单词, etc.)')
+                DEBUG('begin pos 非中文单词(英文单词, etc.)')
                 word, cursor = self.__match_none_chinese_words(sentence, cursor)
                 yield word
 
-            print("cursor", cursor)
-            print("char", sentence[cursor-1])
+            DEBUG("cursor %s" % cursor)
+            DEBUG("char %s" % sentence[cursor-1])
 
     def __ambiguity_resolution(self, chunks):
         '''
         根据当前游标位置进行切词
         '''
-        print('__ambiguity_resolution', '开始消岐')
-        for x in chunks: [print(y.text) for y in x.words]; print('-'*20)
+        DEBUG('__ambiguity_resolution 开始消岐')
+        for x in chunks: [DEBUG(y.text) for y in x.words]; DEBUG('-'*20)
         if len(chunks) > 1: # Rule 1: 根据 total_word_length 进行消岐
-            print("# Rule 1: 根据 total_word_length 进行消岐")
+            DEBUG("# Rule 1: 根据 total_word_length 进行消岐")
             score = max([x.total_word_length for x in chunks])
             chunks = list(filter(None, \
                             [ x if x.total_word_length == score \
                                 else None for x in chunks]))
 
         
-        # for x in chunks: [print(y.text) for y in x.words]; print('-'*20)
+        # for x in chunks: [DEBUG(y.text) for y in x.words]; DEBUG('-'*20)
         if len(chunks) > 1: # Rule 2: 根据 average_word_length 进行消岐
-            print("# Rule 2: 根据 average_word_length 进行消岐") 
+            DEBUG("# Rule 2: 根据 average_word_length 进行消岐") 
             score = max([x.average_word_length for x in chunks])
             chunks = list(filter(None, \
                             [ x if x.average_word_length == score \
@@ -195,7 +196,7 @@ class Tokenizer():
             '''
             分词失败
             '''
-            print("分词失败")
+            DEBUG("分词失败")
             Tokenizer.__print_chunks(chunks)
             return '', 1
 
@@ -206,12 +207,12 @@ class Tokenizer():
     def __print_chunks(chunks, tag='__print_chunks'):
         for x in chunks:
             for y in x.words:
-                print('%s: %s' % (tag, ' '.join([ w.text for w in y])))
+                DEBUG('%s: %s' % (tag, ' '.join([ w.text for w in y])))
 
     @staticmethod
     def __print_words(words, tag='__print_words'):
         for x in words:
-            print('%s: %s length: %d' % (tag, x.text, x.length))
+            DEBUG('%s: %s length: %d' % (tag, x.text, x.length))
 
     def __get_chunks(self, sentence, cursor):
         '''
@@ -239,7 +240,7 @@ class Tokenizer():
         '''
         切割出非中文词
         '''
-        print('__match_none_chinese_words', sentence[begin_pos])
+        DEBUG('__match_none_chinese_words %s' % sentence[begin_pos])
         cursor = begin_pos
 
         # Skip pre-word whitespaces and punctuations
