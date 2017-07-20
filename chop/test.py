@@ -26,7 +26,7 @@ import os
 import sys
 import unittest
 curdir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(curdir))
+sys.path.insert(0, os.path.dirname(curdir))
 
 from chop import Tokenizer, Word, Vocabulary, Chunk
 
@@ -120,6 +120,10 @@ class ChopTest(unittest.TestCase):
         print(' '.join(self.T.cut("好人使用了它就可以解决一些问题")))
         print(' '.join(self.T.cut("是因为和国家")))
         print(' '.join(self.T.cut("老年搜索还支持")))
+
+    def test_basecase(self):
+        self.T = Tokenizer(dict_path=os.path.join(curdir, 'dict.txt'))
+        print(' '.join(self.T.cut("2000年12月31日23时12分在北京妇产医院降生的宝宝赵辰蠧（右）和2001年1月1日零时9分23秒诞生的宝宝韩纪轮（左）在一起。（本报记者孟仁泉摄）")))
 
 if __name__ == '__main__':
     unittest.main()

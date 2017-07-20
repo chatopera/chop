@@ -78,5 +78,9 @@ virtualenv --no-site-packages -p /usr/local/bin/python3.6 ~/venv-py3
 
 [Python实现mmseg分词算法和吐嘈](http://blog.csdn.net/acceptedxukai/article/details/7390300)
 
+## 测评
+
+[中文分词工具测评](http://rsarxiv.github.io/2016/11/29/%E4%B8%AD%E6%96%87%E5%88%86%E8%AF%8D%E5%B7%A5%E5%85%B7%E6%B5%8B%E8%AF%84/)
+
 ## 授权协议
 [MIT](./LICENSE)

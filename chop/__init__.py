@@ -92,6 +92,7 @@ class Vocabulary():
         self.dict_path = dict_path
         self.max_word_length = 0
         self.__load()
+        
 
     def __load(self):
         with open(self.dict_path) as f:
@@ -111,7 +112,9 @@ class Tokenizer():
     MMSEG Tokenizer for Python
     '''
     def __init__(self, dict_path):
+        print('Vocabulary loaded.')
         self.V = Vocabulary(dict_path=dict_path)
+        
 
     def cut(self, sentence):
         sentence_length = len(sentence)
@@ -119,6 +122,7 @@ class Tokenizer():
 
         while cursor < sentence_length:
             if self.is_chinese_char(sentence[cursor]):
+                print('__get_chunks')
                 chunks = self.__get_chunks(sentence, cursor) # Matching Algorithm
                 words, length = self.__ambiguity_resolution(chunks) # Ambiguity Resolution Rules
                 cursor += length
@@ -131,15 +135,15 @@ class Tokenizer():
         '''
         根据当前游标位置进行切词
         '''
-        # print("# Rule 1: 根据 total_word_length 进行消岐")
-        # for x in chunks: [print(y.text) for y in x.words]; print('-'*20)
+        print("# Rule 1: 根据 total_word_length 进行消岐")
+        for x in chunks: [print(y.text) for y in x.words]; print('-'*20)
         if len(chunks) > 1: # Rule 1: 根据 total_word_length 进行消岐
             score = max([x.total_word_length for x in chunks])
             chunks = list(filter(None, \
                             [ x if x.total_word_length == score \
                                 else None for x in chunks]))
 
-        # print("# Rule 2: 根据 average_word_length 进行消岐") 
+        print("# Rule 2: 根据 average_word_length 进行消岐") 
         # for x in chunks: [print(y.text) for y in x.words]; print('-'*20)
         if len(chunks) > 1: # Rule 2: 根据 average_word_length 进行消岐
             score = max([x.average_word_length for x in chunks])
@@ -173,6 +177,7 @@ class Tokenizer():
         根据游标位置取词组
         '''
         chunks = []
+        
         chunk_begin = self.__match_chinese_words(sentence, cursor)
         for b in chunk_begin: 
             chunk_middle = self.__match_chinese_words(sentence, cursor + b.length)
