@@ -53,6 +53,9 @@ class Word():
         self.freq = freq
         self.length = len(text)
 
+    def __str__(self):
+        return self.text
+
 class Chunk():
     '''
     Word Group that split with Forward Maximum Match(FMM)
@@ -87,25 +90,35 @@ class Vocabulary():
     Vocabulary with whole words
     '''
 
-    def __init__(self, dict_path):
+    def __init__(self, dict_path=os.path.join(curdir, 'dict.txt'), punctuation_path=os.path.join(curdir, 'punctuations.txt')):
         self.dict = {}
         self.dict_path = dict_path
+        self.punctuation = []
+        self.punctuation_path = punctuation_path
         self.max_word_length = 0
-        self.__load()
-        
+        self.__load_dict()
+        self.__load_punctuations()
 
-    def __load(self):
-        with open(self.dict_path) as f:
+    def __load_dict(self):
+        with open(self.dict_path, 'r') as f:
             for x in f.readlines():
                 if not x.startswith("#"):
                     text, freq, tag = x.split()
                     self.dict[text] = (len(text), int(freq), tag)
                     self.max_word_length = max([self.max_word_length, len(text)])
 
+    def __load_punctuations(self):
+        with open(self.punctuation_path, 'r') as f:
+            for x in f.readlines():
+                p = x.strip()
+                if p: self.punctuation.append(p)
+
     def get_word(self, text):
         if text in self.dict: 
             return Word(text=text, freq=self.dict[text][1])
 
+    def is_punctuation(self, ch):
+        return ch in self.punctuation
 
 class Tokenizer():
     '''
@@ -115,37 +128,52 @@ class Tokenizer():
         print('Vocabulary loaded.')
         self.V = Vocabulary(dict_path=dict_path)
         
-
-    def cut(self, sentence):
+    def cut(self, sentence, punctuation = True):
         sentence_length = len(sentence)
         cursor = 0
 
         while cursor < sentence_length:
             if self.is_chinese_char(sentence[cursor]):
-                print('__get_chunks')
+                print('begin pos 中文')
                 chunks = self.__get_chunks(sentence, cursor) # Matching Algorithm
-                words, length = self.__ambiguity_resolution(chunks) # Ambiguity Resolution Rules
-                cursor += length
-                for term in list(filter(None, words)): yield term
-            else: # 处理非中文单词(英文单词, etc.)
+                if len(chunks) > 0:
+                    words, length = self.__ambiguity_resolution(chunks) # Ambiguity Resolution Rules
+                    for term in list(filter(None, words)): yield term
+                    # Set the next begin pos
+                    cursor += length
+                else:
+                    # for a single char in Chinese
+                    yield sentence[cursor]
+                    cursor += 1
+            elif self.V.is_punctuation(sentence[cursor]) and punctuation:
+                print("begin pos 字符")
+                yield sentence[cursor]
+                cursor += 1
+            else:
+                print('begin pos 非中文单词(英文单词, etc.)')
                 word, cursor = self.__match_none_chinese_words(sentence, cursor)
                 yield word
+
+            print("cursor", cursor)
+            print("char", sentence[cursor-1])
 
     def __ambiguity_resolution(self, chunks):
         '''
         根据当前游标位置进行切词
         '''
-        print("# Rule 1: 根据 total_word_length 进行消岐")
+        print('__ambiguity_resolution', '开始消岐')
         for x in chunks: [print(y.text) for y in x.words]; print('-'*20)
         if len(chunks) > 1: # Rule 1: 根据 total_word_length 进行消岐
+            print("# Rule 1: 根据 total_word_length 进行消岐")
             score = max([x.total_word_length for x in chunks])
             chunks = list(filter(None, \
                             [ x if x.total_word_length == score \
                                 else None for x in chunks]))
 
-        print("# Rule 2: 根据 average_word_length 进行消岐") 
+        
         # for x in chunks: [print(y.text) for y in x.words]; print('-'*20)
         if len(chunks) > 1: # Rule 2: 根据 average_word_length 进行消岐
+            print("# Rule 2: 根据 average_word_length 进行消岐") 
             score = max([x.average_word_length for x in chunks])
             chunks = list(filter(None, \
                             [ x if x.average_word_length == score \
@@ -167,10 +195,23 @@ class Tokenizer():
             '''
             分词失败
             '''
-            return ''
+            print("分词失败")
+            Tokenizer.__print_chunks(chunks)
+            return '', 1
 
         words = chunks[0].words
         return [w.text for w in words], reduce(lambda x,y: x + y.length, words ,0)
+
+    @staticmethod
+    def __print_chunks(chunks, tag='__print_chunks'):
+        for x in chunks:
+            for y in x.words:
+                print('%s: %s' % (tag, ' '.join([ w.text for w in y])))
+
+    @staticmethod
+    def __print_words(words, tag='__print_words'):
+        for x in words:
+            print('%s: %s length: %d' % (tag, x.text, x.length))
 
     def __get_chunks(self, sentence, cursor):
         '''
@@ -179,19 +220,18 @@ class Tokenizer():
         chunks = []
         
         chunk_begin = self.__match_chinese_words(sentence, cursor)
-        for b in chunk_begin: 
-            chunk_middle = self.__match_chinese_words(sentence, cursor + b.length)
-            if chunk_middle:
-                for m in chunk_middle:
-                    chunk_end = self.__match_chinese_words(sentence, cursor + b.length + m.length)
-                    if chunk_end:
-                        for e in chunk_end: 
-                            chunks.append(Chunk(b, m, e))
-                    else:
-                        chunks.append(Chunk(b, m))
-            else:
-                chunks.append(Chunk(b))
+        Tokenizer.__print_words(chunk_begin)
 
+        for b in chunk_begin:
+            if b.length > 0:
+                chunk_middle = self.__match_chinese_words(sentence, cursor + b.length)
+                for m in chunk_middle:
+                    if m.length > 0:
+                        chunk_end = self.__match_chinese_words(sentence, cursor + b.length + m.length)
+                        for e in chunk_end:
+                            if e.length > 0: chunks.append(Chunk(b, m, e))
+                            else: chunks.append(Chunk(b, m))
+                    else: chunks.append(Chunk(b))
         return chunks
 
     @staticmethod
@@ -199,18 +239,20 @@ class Tokenizer():
         '''
         切割出非中文词
         '''
-        # Skip pre-word whitespaces and punctuations
-        #跳过中英文标点和空格
+        print('__match_none_chinese_words', sentence[begin_pos])
         cursor = begin_pos
+
+        # Skip pre-word whitespaces and punctuations
+        # 跳过中英文标点和空格
         while cursor < len(sentence):
             ch = sentence[cursor]
             if Tokenizer.is_ascii_char(ch) or Tokenizer.is_chinese_char(ch):
                 break
             cursor += 1
-        #得到英文单词的起始位置    
+        # 得到英文单词的起始位置    
         start = cursor
         
-        #找出英文单词的结束位置
+        # 找出英文单词的结束位置
         while cursor < len(sentence):
             ch = sentence[cursor]
             if not Tokenizer.is_ascii_char(ch):
@@ -219,14 +261,14 @@ class Tokenizer():
         end = cursor
         
         #Skip chinese word whitespaces and punctuations
-        #跳过中英文标点和空格
+        # 跳过中英文标点和空格
         while cursor < len(sentence):
             ch = sentence[cursor]
             if Tokenizer.is_ascii_char(ch) or Tokenizer.is_chinese_char(ch):
                 break
             cursor += 1
-            
-        #返回英文单词和游标地址
+
+        # 返回英文单词和游标地址
         return sentence[start:end], cursor
 
     def __match_chinese_words(self, sentence, begin_pos):
@@ -248,7 +290,7 @@ class Tokenizer():
             word = self.V.get_word(text)
             if word: words.append(word)
 
-        if not words: 
+        if not words:
             word = Word()
             word.length = 0
             words.append(word)
