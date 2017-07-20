@@ -86,6 +86,7 @@ https://github.com/Samurais/jieba/blob/master/jieba/dict.txt
 
 ```
 virtualenv --no-site-packages -p /usr/local/bin/python3.6 ~/venv-py3
+CHOP_LOG_LVL=DEBUG
 ./scripts/test.sh
 ```
 
