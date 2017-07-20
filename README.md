@@ -61,5 +61,22 @@ http://www.codes51.com/itwd/1802849.html
 Dict:
 https://github.com/Samurais/jieba/blob/master/jieba/dict.txt
 
+## 贡献代码
+
+```
+virtualenv --no-site-packages -p /usr/local/bin/python3.6 ~/venv-py3
+./scripts/test.sh
+```
+
+## 感谢
+
+[hanlp](http://www.hankcs.com/nlp/ner/) 
+
+[jieba](https://github.com/fxsjy/jieba)
+
+[mmseg](http://technology.chtsai.org/mmseg/)
+
+[Python实现mmseg分词算法和吐嘈](http://blog.csdn.net/acceptedxukai/article/details/7390300)
+
 ## 授权协议
 [MIT](./LICENSE)

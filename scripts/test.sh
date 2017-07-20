@@ -1,6 +1,6 @@
 #! /bin/bash 
 ###########################################
-# Publish to pypi
+# Test
 ###########################################
 
 # constants
@@ -11,4 +11,4 @@ baseDir=$(cd `dirname "$0"`;pwd)
 [ -z "${BASH_SOURCE[0]}" -o "${BASH_SOURCE[0]}" = "$0" ] || return
 cd $baseDir/..
 source ~/venv-py3/bin/activate
-python setup.py sdist upload -r pypi
+python chop/test.py
