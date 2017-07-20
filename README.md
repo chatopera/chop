@@ -61,6 +61,10 @@ http://www.codes51.com/itwd/1802849.html
 Dict:
 https://github.com/Samurais/jieba/blob/master/jieba/dict.txt
 
+## 评测
+
+[chop-evaluate](https://github.com/Samurais/chop-evaluate)
+
 ## 贡献代码
 
 ```
