@@ -34,7 +34,7 @@ for x in t.cut("工信处女干事每月经过下属科室都要亲口交代24�
 """
 
 setup(name='chop',
-      version='0.5',
+      version='0.6',
       description='Chinese Words Segementation Utilities',
       long_description=LONGDOC,
       author='Hai Liang Wang',

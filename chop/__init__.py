@@ -125,7 +125,7 @@ class Tokenizer():
     '''
     MMSEG Tokenizer for Python
     '''
-    def __init__(self, dict_path):
+    def __init__(self, dict_path = os.path.join(curdir, 'dict.txt')):
         DEBUG('Vocabulary loaded.')
         self.V = Vocabulary(dict_path=dict_path)
         

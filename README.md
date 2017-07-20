@@ -24,7 +24,7 @@ import chop
 import os
 
 # 使用chop内部词典初始化
-T = chop.Tokenizer(dict_path=os.path.join(chop.__path__[0], 'dict.txt'))
+T = chop.Tokenizer()
 
 # 切词
 print(' '.join(T.cut("工信处女干事每月经过下属科室都要亲口交代24口交换机等技术性器件的安装工作")))
@@ -40,6 +40,23 @@ for x in t.cut("工信处女干事每月经过下属科室都要亲口交代24�
 ```
 
 * 代码通俗易懂，方便掌握算法
+
+## API
+
+* Tokenizer Object
+
+t = chop.Tokenizer([dict_path="自定义词典位置"])
+
+* t#cut(sentence[, punctuation = True])
+
+参数:
+
+sentence 中文句子
+*punctuation=True* 分词输出标点.
+
+返回:
+
+Token 使用*yield*返回的*generator*
 
 ## 算法
 
