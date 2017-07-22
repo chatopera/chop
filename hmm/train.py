@@ -80,12 +80,13 @@ def train_hmm(corpus_path = TRAIN_CORPUS, vocab_path = TRAIN_VOCAB):
     Train HMM Parameters with corpus and vocab
     '''
     states = ['B', 'M', 'E', 'S']
-    observations = __load_observations()
+    # observations = __load_observations()
+    observations = ['_OOO_'] # OOO stands for out of observations
     pi = {'B': 0.5, 'M': .0, 'E': .0, 'S': 0.5} # start_probability
     # transition probability matrix
     A = {'B':{'B':0, 'E':0, 'M':0, 'S':0}, 'E':{'B':0, 'E':0, 'M':0, 'S':0}, 'M':{'B':0, 'E':0, 'M':0, 'S':0}, 'S':{'B':0, 'E':0, 'M':0, 'S':0}}
     # emission probability matrix
-    B = {'B':{}, 'E':{}, 'M':{}, 'S':{}}
+    B = {'B':{'_OOO_': 1}, 'E':{'_OOO_': 1}, 'M':{'_OOO_': 1}, 'S':{'_OOO_': 1}}
 
     with open(corpus_path, 'r') as fin:
         for line in fin.readlines():
@@ -94,6 +95,11 @@ def train_hmm(corpus_path = TRAIN_CORPUS, vocab_path = TRAIN_VOCAB):
                     (len(t) ==1 and helper.is_punct(t)) else None for t in terms]
             if not terms:
                 continue
+
+            # build observations
+            for term in terms:
+                [ observations.append(ch) if not ch in observations else None for ch in term ]
+
             encoder = reduce(__concat_sbme, terms, [])
             helper.DEBUG(''.join(terms))
             helper.DEBUG(encoder)
@@ -111,13 +117,13 @@ def train_hmm(corpus_path = TRAIN_CORPUS, vocab_path = TRAIN_VOCAB):
                 else:
                     B[state][observation] = 1
 
-    # transition probability matrixfor (k_i, v_i) in 
+    # transition probability matrix
     for k_i, v_i in A.items():
         count = sum(v_i.values())
         for (k_j, v_j) in v_i.items():
-            # transition probability matrix
             A[k_i][k_j] = v_j / count
 
+    # emission probability matrix
     count = .0
     for (k_i, v_i) in B.items():
         for item in observations:
