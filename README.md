@@ -11,41 +11,35 @@ Pypi: https://pypi.python.org/pypi/chop
 
 Python3
 
-## 安装说明
+## 使用说明
 
 代码对 Python 3 兼容
 
-*  全自动安装： ``easy_install chop`` 或者 ``pip install chop`` / ``pip3 install chop``
+* 全自动安装： ``easy_install chop`` 或者 ``pip install chop`` / ``pip3 install chop``
 
 * 接口
 
 ```
-import chop
-import os
+from chop.hmm import Tokenizer as HMMTokenizer
+from chop.mmseg import Tokenizer as MMSEGTokenizer
 
-# 使用chop内部词典初始化
-T = chop.Tokenizer()
+sentence = "工信处女干事每月经过下属科室都要亲口交代24口交换机等技术性器件的安装工作。"
 
-# 切词
-print(' '.join(T.cut("工信处女干事每月经过下属科室都要亲口交代24口交换机等技术性器件的安装工作")))
+def main():
+    HT = HMMTokenizer()
+    MT = MMSEGTokenizer()
+    print('HMM Tokenizer:', ' '.join(HT.cut(sentence)))
+    print('MMSEG Tokenizer:', ' '.join(MT.cut(sentence)))
 
-```
-
-## 特点
-
-* 使用简单
-
-```
-for x in t.cut("工信处女干事每月经过下属科室都要亲口交代24口交换机等技术性器件的安装工作"): print(x)
 ```
 
 * 代码通俗易懂，方便掌握算法
 
 ## API
 
-* Tokenizer Object
+* chop.*[mmseg|hmm]*.Tokenizer Object
 
-t = chop.Tokenizer([dict_path="自定义词典位置"])
+t = chop.mmseg.Tokenizer([dict_path="自定义词典位置"])
 
 * t#cut(sentence[, punctuation = True])
 

@@ -34,7 +34,7 @@ for x in t.cut("工信处女干事每月经过下属科室都要亲口交代24�
 """
 
 setup(name='chop',
-      version='0.6',
+      version='0.8',
       description='Chinese Words Segementation Utilities',
       long_description=LONGDOC,
       author='Hai Liang Wang',
@@ -57,7 +57,7 @@ setup(name='chop',
         'Topic :: Text Processing :: Linguistic',
       ],
       keywords='NLP,tokenizing,Chinese word segementation',
-      packages= ['chop'],
-      package_dir={'chop':'chop'},
-      package_data={'chop':['*.txt']}
+      packages= find_packages(),
+      # package_dir={'chop':['chop']},
+      package_data={'chop':['mmseg/*.txt', 'hmm/*.json', 'hmm/*.utf8']}
 )

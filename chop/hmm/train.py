@@ -26,13 +26,14 @@ import os
 import sys
 import json
 curdir = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(curdir, os.path.pardir))
+sys.path.insert(0, os.path.join(curdir, os.path.pardir, os.path.pardir))
 
 TRAIN_CORPUS=os.path.join(curdir, 'msr_training.utf8')
 TRAIN_VOCAB=os.path.join(curdir, 'pku_training_words.utf8')
 
 import chop.util as helper
 from functools import reduce
+OUT_OF_OBS = "_OOO_"
 
 def __load_observations(vocab_path = TRAIN_VOCAB):
     '''
@@ -81,12 +82,12 @@ def train_hmm(corpus_path = TRAIN_CORPUS, vocab_path = TRAIN_VOCAB):
     '''
     states = ['B', 'M', 'E', 'S']
     # observations = __load_observations()
-    observations = ['_OOO_'] # OOO stands for out of observations
+    observations = [OUT_OF_OBS] # OOO stands for out of observations
     pi = {'B': 0.5, 'M': .0, 'E': .0, 'S': 0.5} # start_probability
     # transition probability matrix
     A = {'B':{'B':0, 'E':0, 'M':0, 'S':0}, 'E':{'B':0, 'E':0, 'M':0, 'S':0}, 'M':{'B':0, 'E':0, 'M':0, 'S':0}, 'S':{'B':0, 'E':0, 'M':0, 'S':0}}
     # emission probability matrix
-    B = {'B':{'_OOO_': 1}, 'E':{'_OOO_': 1}, 'M':{'_OOO_': 1}, 'S':{'_OOO_': 1}}
+    B = {'B':{OUT_OF_OBS: 1}, 'E':{OUT_OF_OBS: 1}, 'M':{OUT_OF_OBS: 1}, 'S':{OUT_OF_OBS: 1}}
 
     with open(corpus_path, 'r') as fin:
         for line in fin.readlines():

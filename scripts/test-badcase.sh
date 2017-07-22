@@ -12,4 +12,4 @@ baseDir=$(cd `dirname "$0"`;pwd)
 [ -z "${BASH_SOURCE[0]}" -o "${BASH_SOURCE[0]}" = "$0" ] || return
 cd $baseDir/..
 source ~/venv-py3/bin/activate
-CHOP_LOG_LVL=DEBUG python chop/test.py --input $1 ChopTest.test_basecase 
+CHOP_LOG_LVL=DEBUG python chop/mmseg/test.py --input $1 ChopTest.test_basecase 

@@ -27,9 +27,9 @@ import sys
 import unittest
 import argparse
 curdir = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.dirname(curdir))
+sys.path.insert(0, os.path.join(curdir, os.path.pardir, os.path.pardir))
 
-from chop import Tokenizer, Word, Vocabulary, Chunk
+from chop.mmseg import Tokenizer, Word, Vocabulary, Chunk
 from chop.util import DEBUG, INFO, WARN, ERROR
 
 global args
