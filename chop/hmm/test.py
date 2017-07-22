@@ -33,9 +33,19 @@ import chop.util as helper
 
 class HMMSegTest(unittest.TestCase):
 
+    def setUp(self):
+        self.T = Tokenizer()
+
+    def test_punctuation(self):
+        helper.DEBUG(' '.join(self.T.cut('作为市长，我也体会到这种危险。', punctuation = False)))
+
     def test_seg(self):
-        T = Tokenizer()
-        helper.DEBUG(' '.join(T.cut('作为市长，我也体会到这种危险。', punctuation = False)))
+        helper.DEBUG(' '.join(self.T.cut('＊  ＊  ＊  ＊  ＊')))
+
+    def test_oov(self):
+        helper.DEBUG(' '.join(self.T.cut('温济泽')))
+        
+        helper.DEBUG(' '.join(self.T.cut('桑新')))
 
 if __name__ == '__main__':
     unittest.main()

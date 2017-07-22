@@ -82,6 +82,8 @@ class Tokenizer():
         '''
         map SBME tokens to segmented text
         '''
+        helper.DEBUG('__decode_sbme %s' % punctuations)
+
         def resolve_punctuation(i):
             if punctuations and i in punctuations:
                 return punctuations[i]
@@ -96,6 +98,10 @@ class Tokenizer():
                 token += text[index]
                 yield ''.join(token)
                 token = ''
+
+            # label的最后不是 E，但token有值的情况
+            if index == (len(labels) - 1) and (labels[-1] != 'E') and token:
+                yield token
 
             # 标点符号
             ps = resolve_punctuation(index+1)
@@ -119,7 +125,17 @@ class Tokenizer():
 
         if len(text) > 0:
             prob, path = self.__viterbi(text)
+            helper.DEBUG("Final path: %s" % path)
             return self.__decode_sbme(text, path, punctuations if punctuation > 0 else None)
+
+        '''
+        condition there are only punctuations in sentence
+        '''
+        if len(text) == 0 and len(punctuations.keys()) > 0:
+            result = []
+            for x in punctuations.values():
+                [ result.append(y) for y in x ]
+            return result
 
         return []
 
